@@ -17,7 +17,6 @@ let selectedUserId = null;
 function connect(event) {
     nickname = document.querySelector('#nickname').value.trim();
     fullname = document.querySelector('#fullname').value.trim();
-
     if (nickname && fullname) {
         usernamePage.classList.add('hidden');
         chatPage.classList.remove('hidden');
@@ -33,7 +32,7 @@ function connect(event) {
 
 function onConnected() {
     stompClient.subscribe(`/user/${nickname}/queue/messages`, onMessageReceived);
-    stompClient.subscribe(`/user/${nickname}/public`, onMessageReceived);
+    stompClient.subscribe(`/user/public`, onMessageReceived);
 
     // register the connected user
     stompClient.send("/app/user.addUser",
