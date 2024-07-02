@@ -38,4 +38,6 @@ public class UserController {
     public ResponseEntity<List<User>> findConnectedUsers() {
         return ResponseEntity.ok(userService.findConnectedUsers());
     }
+
+
 }

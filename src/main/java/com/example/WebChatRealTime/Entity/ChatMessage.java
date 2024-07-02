@@ -22,4 +22,7 @@ public class ChatMessage {
     private String recipientId;
     private String content;
     private Date timestamp;
+    private String fileName;
+    private String fileType;
+    private String fileContentBase64; // Base64 encoded file content
 }

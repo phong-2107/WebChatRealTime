@@ -34,6 +34,19 @@ public class ChatController {
                 )
         );
     }
+    @MessageMapping("/chat/file")
+    public void processFileMessage(@Payload ChatMessage chatMessage) {
+        ChatMessage savedMsg = chatMessageService.save(chatMessage);
+        messagingTemplate.convertAndSendToUser(
+                chatMessage.getRecipientId(), "/queue/messages",
+                new ChatNotification(
+                        savedMsg.getId(),
+                        savedMsg.getSenderId(),
+                        savedMsg.getRecipientId(),
+                        "File: " + savedMsg.getFileName()
+                )
+        );
+    }
 
     @GetMapping("/messages/{senderId}/{recipientId}")
     public ResponseEntity<List<ChatMessage>> findChatMessages(@PathVariable String senderId,
