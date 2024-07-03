@@ -78,16 +78,13 @@
                 </div>
                 <div id="groupFormPopup" class="popup">
                     <div class="popup-content">
-                        <span class="close-btn" onclick="closeGroupForm()">&times;</span>
-                        <h2>Add User to Group</h2>
-                        <form id="groupForm">
-                            <label for="searchFriend">Search Friend:</label>
-                            <input type="text" id="searchFriend" oninput="filterFriends()" placeholder="Search for friends...">
-                            <ul id="friendList">
-                                <!-- Friends will be dynamically added here -->
-                            </ul>
-                            <button type="submit">Add</button>
-                        </form>
+                        <span class="close" onclick="closeGroupForm()">&times;</span>
+                        <h2>Create Group</h2>
+                        <input type="text" id="groupName" placeholder="Group Name">
+                        <h3>Select Members</h3>
+                        <input type="text" id="searchUser" placeholder="Search User" onkeyup="searchUser()">
+                        <div id="userList"></div>
+                        <button onclick="createGroup()">Create Group</button>
                     </div>
                 </div>
             </div>
@@ -96,7 +93,7 @@
 <!--            <div class="conversation conversation-default active">-->
 <!--                <i class="ri-chat-3-line"></i>-->
 <!--                <p>Select chat and view conversation!</p>-->
-<!--            </div>-->
+<!--        </div>-->
             <div class="conversation active">
                 <div class="conversation-top">
                     <button type="button" class="conversation-back"><i class="ri-arrow-left-line"></i></button>

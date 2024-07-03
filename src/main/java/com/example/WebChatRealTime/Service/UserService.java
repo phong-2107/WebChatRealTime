@@ -62,13 +62,6 @@ public class UserService {
 
         return savedGroup;
     }
-
-
-
-    public List<ChatGroup> getAllGroups() {
-        return chatGroupRepository.findAll();
-    }
-
     public GroupMember addUserToGroup(String groupId, String userId, String role) {
         GroupMember groupMember = new GroupMember();
         groupMember.setGroupId(groupId);
@@ -83,5 +76,9 @@ public class UserService {
 
     public List<GroupMember> getGroupMembers(String groupId) {
         return groupMemberRepository.findByGroupId(groupId);
+    }
+
+    public List<ChatGroup> getAllGroups() {
+        return chatGroupRepository.findAll();
     }
 }

@@ -477,55 +477,128 @@ function onLogout() {
         };
 
 
-
-let friends = [
-    { id: 1, name: "Alice" },
-    { id: 2, name: "Bob" },
-    { id: 3, name: "Charlie" },
-    // Add more friends here
-];
+// ========================================= Create Group ==========================================
+let selectedUsers = new Set();
 
 function showGroupForm() {
-    document.getElementById("groupFormPopup").style.display = "block";
-    displayFriendList(friends);
+    document.getElementById('groupFormPopup').style.display = 'block';
+    fetchUsers();
 }
 
 function closeGroupForm() {
-    document.getElementById("groupFormPopup").style.display = "none";
+    document.getElementById('groupFormPopup').style.display = 'none';
+    selectedUsers.clear();
 }
 
-function displayFriendList(friendArray) {
-    const friendList = document.getElementById("friendList");
-    friendList.innerHTML = "";
-    friendArray.forEach(friend => {
-        const li = document.createElement("li");
-        li.textContent = friend.name;
-        li.setAttribute("data-id", friend.id);
-        li.onclick = () => addToGroup(friend.id);
-        friendList.appendChild(li);
-    });
+function fetchUsers() {
+    fetch('/users')
+        .then(response => response.json())
+        .then(users => {
+            const userList = document.getElementById('userList');
+            userList.innerHTML = '';
+            users.forEach(user => {
+                const userItem = document.createElement('div');
+                userItem.classList.add('user-item');
+                userItem.textContent = user.fullName;
+                userItem.dataset.userId = user.nickName;
+                userItem.onclick = () => toggleUserSelection(userItem);
+                userList.appendChild(userItem);
+            });
+        })
+        .catch(error => console.error('Error fetching users:', error));
 }
 
-function filterFriends() {
-    const searchValue = document.getElementById("searchFriend").value.toLowerCase();
-    const filteredFriends = friends.filter(friend => friend.name.toLowerCase().includes(searchValue));
-    displayFriendList(filteredFriends);
-}
-
-function addToGroup(friendId) {
-    const friend = friends.find(f => f.id === friendId);
-    alert(`Added ${friend.name} to the group!`);
-    // Here you can add the logic to actually add the friend to the group, e.g., updating the database or local state
-}
-
-// Close the popup when clicking outside of it
-window.onclick = function(event) {
-    var popup = document.getElementById("groupFormPopup");
-    if (event.target == popup) {
-        popup.style.display = "none";
+function toggleUserSelection(userItem) {
+    const userId = userItem.dataset.userId;
+    if (selectedUsers.has(userId)) {
+        selectedUsers.delete(userId);
+        userItem.classList.remove('selected');
+    } else {
+        selectedUsers.add(userId);
+        userItem.classList.add('selected');
     }
 }
 
+function searchUser() {
+    const input = document.getElementById('searchUser');
+    const filter = input.value.toLowerCase();
+    const userList = document.getElementById('userList');
+    const userItems = userList.getElementsByClassName('user-item');
+
+    Array.from(userItems).forEach(userItem => {
+        const text = userItem.textContent || userItem.innerText;
+        if (text.toLowerCase().indexOf(filter) > -1) {
+            userItem.style.display = '';
+        } else {
+            userItem.style.display = 'none';
+        }
+    });
+}
+
+function createGroup() {
+    const groupName = document.getElementById('groupName').value;
+    const creatorId = 'currentUser'; // Replace with the actual current user ID
+
+    const groupData = {
+        name: groupName,
+        creatorId: creatorId,
+        createdDate: new Date()
+    };
+
+    fetch('/group/create', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(groupData),
+    })
+    .then(response => response.json())
+    .then(group => {
+        const groupId = group.id;
+        selectedUsers.forEach(userId => {
+            const groupMemberData = {
+                groupId: groupId,
+                userId: userId,
+                role: 'MEMBER'
+            };
+            fetch('/group/addUser', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(groupMemberData),
+            })
+            .then(response => response.json())
+            .then(member => {
+                console.log('Added member:', member);
+            })
+            .catch(error => console.error('Error adding member:', error));
+        });
+        console.log('Group created:', group);
+        closeGroupForm();
+        addGroupToSidebar(group);
+    })
+    .catch(error => console.error('Error creating group:', error));
+}
+
+function addGroupToSidebar(group) {
+    // Add the newly created group to the sidebar or wherever you display groups
+    const groupList = document.getElementById('groupList'); // Make sure this element exists in your HTML
+    const groupItem = document.createElement('div');
+    groupItem.classList.add('group-item');
+    groupItem.textContent = group.name;
+    groupItem.dataset.groupId = group.id;
+    groupItem.onclick = () => openChatRoom(group.id);
+    groupList.appendChild(groupItem);
+}
+
+function openChatRoom(groupId) {
+    // Logic to open the chat room for the given group
+    console.log('Opening chat room for group:', groupId);
+}
+
+
+//==================== Xử lý ======================
 usernameForm.addEventListener('submit', connect, true);
 messageForm.addEventListener('submit', sendMessage, true);
 logout.addEventListener('click', onLogout, true);

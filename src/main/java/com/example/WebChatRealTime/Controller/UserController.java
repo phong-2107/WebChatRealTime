@@ -56,13 +56,13 @@ public class UserController {
     }
 
     @PostMapping("/group/addUser")
-    public ResponseEntity<GroupMember> addUserToGroup(@RequestBody String groupId, @RequestBody String userId, @RequestBody String role) {
-        return ResponseEntity.ok(userService.addUserToGroup(groupId, userId, role));
+    public ResponseEntity<GroupMember> addUserToGroup(@RequestBody GroupMember groupMember) {
+        return ResponseEntity.ok(userService.addUserToGroup(groupMember.getGroupId(), groupMember.getUserId(), groupMember.getRole()));
     }
 
     @PostMapping("/group/removeUser")
-    public ResponseEntity<Void> removeUserFromGroup(@RequestBody String groupId, @RequestBody String userId) {
-        userService.removeUserFromGroup(groupId, userId);
+    public ResponseEntity<Void> removeUserFromGroup(@RequestBody GroupMember groupMember) {
+        userService.removeUserFromGroup(groupMember.getGroupId(), groupMember.getUserId());
         return ResponseEntity.ok().build();
     }
 
