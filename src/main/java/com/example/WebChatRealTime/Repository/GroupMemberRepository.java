@@ -8,4 +8,5 @@ import java.util.List;
 public interface GroupMemberRepository extends MongoRepository<GroupMember, String> {
     List<GroupMember> findByGroupId(String groupId);
     void deleteByGroupIdAndUserId(String groupId, String userId);
+    List<GroupMember> findByUserId(String userId);
 }

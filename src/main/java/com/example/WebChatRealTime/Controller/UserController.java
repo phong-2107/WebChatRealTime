@@ -1,8 +1,10 @@
 package com.example.WebChatRealTime.Controller;
 
 import com.example.WebChatRealTime.Entity.ChatGroup;
+import com.example.WebChatRealTime.Entity.ChatMessage;
 import com.example.WebChatRealTime.Entity.GroupMember;
 import com.example.WebChatRealTime.Entity.User;
+import com.example.WebChatRealTime.Service.ChatMessageService;
 import com.example.WebChatRealTime.Service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,13 +18,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
-
     @MessageMapping("/user.addUser")
     @SendTo("/user/public")
     public User addUser(@Payload User user) {
@@ -44,7 +47,13 @@ public class UserController {
         return ResponseEntity.ok(userService.findConnectedUsers());
     }
 
-    @MessageMapping("/group.create")
+//    @MessageMapping("/group.create")
+//    @SendTo("/group/public")
+//    public ChatGroup createGroup(@Payload ChatGroup chatGroup) {
+//        return userService.createGroup(chatGroup);
+//    }
+
+    @MessageMapping("/group/create")
     @SendTo("/group/public")
     public ChatGroup createGroup(@Payload ChatGroup chatGroup) {
         return userService.createGroup(chatGroup);
@@ -70,6 +79,18 @@ public class UserController {
     public ResponseEntity<List<GroupMember>> getGroupMembers(@PathVariable String groupId) {
         return ResponseEntity.ok(userService.getGroupMembers(groupId));
     }
-
-
+    @GetMapping("/user/{userId}/groups")
+    public ResponseEntity<List<ChatGroup>> getUserGroups(@PathVariable String userId) {
+        List<GroupMember> groupMembers = userService.getGroupMemberships(userId);
+        List<String> groupIds = groupMembers.stream()
+                .map(GroupMember::getGroupId)
+                .collect(Collectors.toList());
+        List<ChatGroup> userGroups = userService.getGroupsByIds(groupIds);
+        return ResponseEntity.ok(userGroups);
+    }
+    @GetMapping("/messages/last/{senderId}/{recipientId}")
+    public ResponseEntity<ChatMessage> getLastMessage(@PathVariable String senderId, @PathVariable String recipientId) {
+        Optional<ChatMessage> lastMessage = userService.getLastMessageBetweenUsers(senderId, recipientId);
+        return lastMessage.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.noContent().build());
+    }
 }

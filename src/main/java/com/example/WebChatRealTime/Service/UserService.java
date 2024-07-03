@@ -2,14 +2,13 @@ package com.example.WebChatRealTime.Service;
 
 
 import com.example.WebChatRealTime.Entity.*;
-import com.example.WebChatRealTime.Repository.ChatGroupRepository;
-import com.example.WebChatRealTime.Repository.ChatRoomRepository;
-import com.example.WebChatRealTime.Repository.GroupMemberRepository;
-import com.example.WebChatRealTime.Repository.UserRepository;
+import com.example.WebChatRealTime.Repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -19,11 +18,7 @@ public class UserService {
     private final ChatGroupRepository chatGroupRepository;
     private final GroupMemberRepository groupMemberRepository;
     private final ChatRoomRepository chatRoomRepository;
-//    public UserService(UserRepository repository, ChatGroupRepository chatGroupRepository, GroupMemberRepository groupMemberRepository) {
-//        this.repository = repository;
-//        this.chatGroupRepository = chatGroupRepository;
-//        this.groupMemberRepository = groupMemberRepository;
-//    }
+    private final ChatMessageRepository chatMessageRepository;
 
 
     public void saveUser(User user) {
@@ -80,5 +75,17 @@ public class UserService {
 
     public List<ChatGroup> getAllGroups() {
         return chatGroupRepository.findAll();
+    }
+
+    public List<GroupMember> getGroupMemberships(String userId) {
+        return groupMemberRepository.findByUserId(userId);
+    }
+
+    public List<ChatGroup> getGroupsByIds(List<String> groupIds) {
+        return chatGroupRepository.findByIdIn(groupIds);
+    }
+    public Optional<ChatMessage> getLastMessageBetweenUsers(String senderId, String recipientId) {
+        List<ChatMessage> messages = chatMessageRepository.findChatMessagesBetweenUsers(senderId, recipientId);
+        return messages.stream().max(Comparator.comparing(ChatMessage::getTimestamp));
     }
 }

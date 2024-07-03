@@ -38,6 +38,8 @@ function onConnected() {
         JSON.stringify({nickName: nickname, fullName: fullname, status: 'ONLINE'})
     );
     findAndDisplayConnectedUsers().then();
+    findAndDisplayUserGroups().then();
+
 }
 
 async function findAndDisplayConnectedUsers() {
@@ -57,11 +59,29 @@ async function findAndDisplayConnectedUsers() {
     });
 }
 
-function appendUserElement(user, connectedUsersList) {
+
+async function findAndDisplayUserGroups() {
+    const userGroupsResponse = await fetch(`/user/${nickname}/groups`);
+    let userGroups = await userGroupsResponse.json();
+    const connectedGroupList = document.getElementById('connectedUsers');
+    connectedGroupList.innerHTML = '';
+    userGroups.forEach(group => {
+        appendGroupElement(group, connectedGroupList);
+        if (userGroups.indexOf(group) < userGroups.length - 1) {
+            const separator = document.createElement('li');
+            separator.classList.add('separator');
+            connectedGroupList.appendChild(separator);
+        }
+    });
+}
+//content-messages-list
+
+
+async function appendUserElement(user, connectedUsersList) {
     const listItem = document.createElement('li');
     listItem.classList.add('user-item');
     listItem.id = user.nickName;
-
+    const lastMessageContent = await fetchLastMessage(user.nickName,nickname);
     const anchorTag = document.createElement('a');
     anchorTag.setAttribute('data-conversation', '#conversation-1');
     anchorTag.addEventListener('click', userItemClick);
@@ -77,6 +97,73 @@ function appendUserElement(user, connectedUsersList) {
     const nameSpan = document.createElement('span');
     nameSpan.classList.add('content-message-name');
     nameSpan.textContent = user.fullName;
+
+    const textSpan = document.createElement('span');
+    textSpan.classList.add('content-message-text');
+    textSpan.textContent = lastMessageContent;
+
+    const moreSpan = document.createElement('span');
+    moreSpan.classList.add('content-message-more');
+
+    const unreadSpan = document.createElement('span');
+    unreadSpan.classList.add('content-message-unread');
+    unreadSpan.textContent = '1';
+
+    const timeSpan = document.createElement('span');
+    timeSpan.classList.add('content-message-time');
+    timeSpan.textContent = '12:30';
+
+    moreSpan.appendChild(unreadSpan);
+    moreSpan.appendChild(timeSpan);
+
+    messageInfoSpan.appendChild(nameSpan);
+    messageInfoSpan.appendChild(textSpan);
+
+    anchorTag.appendChild(userImage);
+    anchorTag.appendChild(messageInfoSpan);
+    anchorTag.appendChild(moreSpan);
+
+    listItem.appendChild(anchorTag);
+    listItem.addEventListener('click', userItemClick);
+
+    connectedUsersList.appendChild(listItem);
+}
+async function fetchLastMessage(senderId, recipientId) {
+    try {
+        const response = await fetch(`/messages/last/${senderId}/${recipientId}`);
+        if (response.ok) {
+            const lastMessage = await response.json();
+            return lastMessage.content;
+        } else {
+            console.error('Failed to fetch last message:', response.status);
+            return 'No message found';
+        }
+    } catch (error) {
+//        console.error('Error fetching last message:', error);
+        return 'Error fetching message';
+    }
+}
+
+function appendGroupElement(group, connectedUsersList) {
+    const listItem = document.createElement('li');
+    listItem.classList.add('user-item');
+    listItem.id = group.nickName;
+
+    const anchorTag = document.createElement('a');
+    anchorTag.setAttribute('data-conversation', '#conversation-1');
+    anchorTag.addEventListener('click', userItemClick);
+
+    const userImage = document.createElement('img');
+    userImage.classList.add('content-message-image');
+    userImage.src = './src/59045.png';
+    userImage.alt = '';
+
+    const messageInfoSpan = document.createElement('span');
+    messageInfoSpan.classList.add('content-message-info');
+
+    const nameSpan = document.createElement('span');
+    nameSpan.classList.add('content-message-name');
+    nameSpan.textContent = group.name;
 
     const textSpan = document.createElement('span');
     textSpan.classList.add('content-message-text');
@@ -107,6 +194,56 @@ function appendUserElement(user, connectedUsersList) {
     listItem.addEventListener('click', userItemClick);
 
     connectedUsersList.appendChild(listItem);
+
+//    const listItem = document.createElement('li');
+//    listItem.classList.add('user-item');
+//    listItem.id = group.id;
+//
+//    const anchorTag = document.createElement('a');
+//    anchorTag.setAttribute('data-conversation', '#conversation-1');
+//    anchorTag.addEventListener('click', userItemClick);
+//
+//    const groupImage = document.createElement('img');
+//    groupImage.classList.add('content-message-image');
+//    groupImage.src = './src/59045.png'; // Replace with a suitable group icon image
+//    groupImage.alt = 'group';
+//
+//    const messageInfoSpan = document.createElement('span');
+//    messageInfoSpan.classList.add('content-message-info');
+//
+//    const nameSpan = document.createElement('span');
+//    nameSpan.classList.add('content-message-name');
+//    nameSpan.textContent = group.name;
+//
+////    const textSpan = document.createElement('span');
+////    textSpan.classList.add('content-message-text');
+////    textSpan.textContent = 'Group created successfully.';
+//
+//    const moreSpan = document.createElement('span');
+//    moreSpan.classList.add('content-message-more');
+//
+//    const unreadSpan = document.createElement('span');
+//    unreadSpan.classList.add('content-message-unread');
+//    unreadSpan.textContent = '1';
+//
+////    const timeSpan = document.createElement('span');
+////    timeSpan.classList.add('content-message-time');
+////    timeSpan.textContent = new Date().toLocaleTimeString();
+//
+//    moreSpan.appendChild(unreadSpan);
+////    moreSpan.appendChild(timeSpan);
+//
+//    messageInfoSpan.appendChild(nameSpan);
+////    messageInfoSpan.appendChild(textSpan);
+//
+//    anchorTag.appendChild(groupImage);
+//    anchorTag.appendChild(messageInfoSpan);
+//    anchorTag.appendChild(moreSpan);
+//
+//    listItem.appendChild(anchorTag);
+//    listItem.addEventListener('click', userItemClick);
+//
+//    connectedUsersList.appendChild(listItem);
 }
 
 function userItemClick(event) {
@@ -114,7 +251,7 @@ function userItemClick(event) {
         item.classList.remove('active');
     });
     messageForm.classList.remove('hidden');
-
+    console.log("click user");
     const clickedUser = event.currentTarget;
     clickedUser.classList.add('active');
 
@@ -476,18 +613,19 @@ function onLogout() {
             document.getElementById('stopCall').onclick = function () { stopCall(); };
         };
 
-
 // ========================================= Create Group ==========================================
 let selectedUsers = new Set();
 
 function showGroupForm() {
     document.getElementById('groupFormPopup').style.display = 'block';
     fetchUsers();
+
 }
 
 function closeGroupForm() {
     document.getElementById('groupFormPopup').style.display = 'none';
     selectedUsers.clear();
+
 }
 
 function fetchUsers() {
@@ -535,9 +673,9 @@ function searchUser() {
     });
 }
 
-function createGroup() {
+function createGroup(connectedUsersList) {
     const groupName = document.getElementById('groupName').value;
-    const creatorId = 'currentUser'; // Replace with the actual current user ID
+    const creatorId = nickname;
 
     const groupData = {
         name: groupName,
@@ -545,44 +683,46 @@ function createGroup() {
         createdDate: new Date()
     };
 
-    fetch('/group/create', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(groupData),
-    })
-    .then(response => response.json())
-    .then(group => {
-        const groupId = group.id;
-        selectedUsers.forEach(userId => {
-            const groupMemberData = {
-                groupId: groupId,
-                userId: userId,
-                role: 'MEMBER'
-            };
-            fetch('/group/addUser', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(groupMemberData),
-            })
-            .then(response => response.json())
-            .then(member => {
-                console.log('Added member:', member);
-            })
-            .catch(error => console.error('Error adding member:', error));
+    if (stompClient) {
+        stompClient.send("/app/group/create", {}, JSON.stringify(groupData));
+
+        // Handle the group creation response
+        stompClient.subscribe(`/group/public`, (message) => {
+            const group = JSON.parse(message.body);
+            const groupId = group.id;
+
+            selectedUsers.forEach(userId => {
+                const groupMemberData = {
+                    groupId: groupId,
+                    userId: userId,
+                    role: 'MEMBER'
+                };
+                fetch('/group/addUser', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(groupMemberData),
+                })
+                .then(response => response.json())
+                .then(member => {
+                    console.log('Added member:', member);
+                })
+                .catch(error => console.error('Error adding member:', error));
+            });
+
+            console.log('Group created:', group);
+            closeGroupForm();
+            addGroupToSidebar(group);
+            appendGroupElement(group, connectedUsersList); // Add the group to the connected users list
         });
-        console.log('Group created:', group);
-        closeGroupForm();
-        addGroupToSidebar(group);
-    })
-    .catch(error => console.error('Error creating group:', error));
+    } else {
+        console.error('STOMP client is not connected.');
+    }
 }
 
+
 function addGroupToSidebar(group) {
-    // Add the newly created group to the sidebar or wherever you display groups
     const groupList = document.getElementById('groupList'); // Make sure this element exists in your HTML
     const groupItem = document.createElement('div');
     groupItem.classList.add('group-item');
@@ -590,11 +730,21 @@ function addGroupToSidebar(group) {
     groupItem.dataset.groupId = group.id;
     groupItem.onclick = () => openChatRoom(group.id);
     groupList.appendChild(groupItem);
+    console.log(groupList);
 }
 
+
+
 function openChatRoom(groupId) {
-    // Logic to open the chat room for the given group
     console.log('Opening chat room for group:', groupId);
+}
+
+// Handle group creation
+function createGroupHandler() {
+    const connectedUsersList = document.getElementById('connectedUsersList');
+    createGroup(connectedUsersList);
+    findAndDisplayConnectedUsers().then();
+    findAndDisplayUserGroups().then();
 }
 
 

@@ -75,18 +75,26 @@
                     <ul class="content-messages-list" id="connectedUsers">
                         <li class="content-message-title"><span>Message</span></li>
                     </ul>
+<!--                    <ul id="connectedUsersList" class="connected-users-list"></ul>-->
+<!--                    <ul id="connectedGroupList" class="connected-users-list"></ul>-->
                 </div>
+
                 <div id="groupFormPopup" class="popup">
                     <div class="popup-content">
-                        <span class="close" onclick="closeGroupForm()">&times;</span>
+                        <span class="close-btn" onclick="closeGroupForm()">&times;</span>
                         <h2>Create Group</h2>
-                        <input type="text" id="groupName" placeholder="Group Name">
+                        <input type="text" id="groupName" placeholder="Group Name" class="input-field">
                         <h3>Select Members</h3>
-                        <input type="text" id="searchUser" placeholder="Search User" onkeyup="searchUser()">
-                        <div id="userList"></div>
-                        <button onclick="createGroup()">Create Group</button>
+                        <input type="text" id="searchUser" placeholder="Search User" onkeyup="searchUser()" class="input-field">
+                        <div id="userList" class="user-list"></div>
+                        <button onclick="createGroupHandler()" class="create-btn">Create Group</button>
                     </div>
                 </div>
+
+
+
+                <div id="groupList" class="group-list"></div> <!-- Thêm phần tử này -->
+
             </div>
             <!-- Content side -->
             <!--  Conversation -->
@@ -133,8 +141,8 @@
             <!--  Conversation -->
         </div>
         <!--  Content -->
-        <!--  Video Call  style="display:none;"-->
-        <div class="video-container">
+        <!--  Video Call  -->
+        <div class="video-container" style="display:none;">
             <video id="localVideo" autoplay muted></video>
             <video id="remoteVideo" autoplay></video>
             <button id="startCall">Start Call</button>

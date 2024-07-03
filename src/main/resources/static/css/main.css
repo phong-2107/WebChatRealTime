@@ -234,13 +234,13 @@ video {
     overflow: auto;
     background-color: rgba(0, 0, 0, 0.4);
 }
-
 /* Popup content */
 .popup-content {
-    background-color: #fefefe;
-    margin: 15% auto;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin: 10% auto;
     padding: 20px;
-    border: 1px solid #888;
     width: 80%;
     max-width: 400px;
 }
@@ -251,26 +251,62 @@ video {
     float: right;
     font-size: 28px;
     font-weight: bold;
+    cursor: pointer;
 }
 
 .close-btn:hover,
 .close-btn:focus {
-    color: black;
+    color: #333;
     text-decoration: none;
-    cursor: pointer;
 }
 
-/* Friend list styles */
-#friendList {
-    list-style-type: none;
-    padding: 0;
-}
-
-#friendList li {
+/* Input fields */
+.input-field {
+    width: 100%;
     padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+/* Create button */
+.create-btn {
+    width: 100%;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.create-btn:hover {
+    background-color: #45a049;
+}
+
+/* User list */
+.user-list {
+    max-height: 200px;
+    overflow-y: auto;
+    margin-top: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.user-list div {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
     cursor: pointer;
 }
 
-#friendList li:hover {
-    background-color: #f0f0f0;
+.user-list div:hover {
+    background-color: #f9f9f9;
 }
+
+.user-item.selected {
+            background-color: #d3d3d3;
+        }

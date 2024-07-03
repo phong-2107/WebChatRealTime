@@ -13,5 +13,5 @@ public class GroupMember {
     private String id;
     private String groupId;
     private String userId;
-    private String role; // Ví dụ: "ADMIN", "MEMBER"
+    private String role;
 }

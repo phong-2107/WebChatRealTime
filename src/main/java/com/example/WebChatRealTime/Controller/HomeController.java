@@ -15,9 +15,13 @@ public class HomeController {
     public HomeController(){
 
     }
-//    @GetMapping("/")
-//    public String Index(){
-//        return  "static/Index";
-//    }
+    @GetMapping("/login")
+    public String Login(){
+        return  "user/login";
+    }
+    @GetMapping("/register")
+    public String register(){
+        return  "user/register";
+    }
 
 }
