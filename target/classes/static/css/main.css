@@ -204,3 +204,73 @@ a.logout {
     color: #fff;
     text-decoration: none;
 }
+
+/*video call */
+
+.video-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 100vh;
+    background-color: #000;
+}
+
+video {
+    width: 45%;
+    height: auto;
+    border: 1px solid #fff;
+}
+
+
+/* Popup container - can be anything you want */
+.popup {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+/* Popup content */
+.popup-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 400px;
+}
+
+/* Close button */
+.close-btn {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Friend list styles */
+#friendList {
+    list-style-type: none;
+    padding: 0;
+}
+
+#friendList li {
+    padding: 10px;
+    cursor: pointer;
+}
+
+#friendList li:hover {
+    background-color: #f0f0f0;
+}

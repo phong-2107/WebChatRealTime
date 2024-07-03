@@ -8,7 +8,7 @@ const messageInput = document.querySelector('#message');
 const connectingElement = document.querySelector('.connecting');
 const chatArea = document.querySelector('#chat-messages');
 const logout = document.querySelector('.logout');
-var mess
+
 let stompClient = null;
 let nickname = null;
 let fullname = null;
@@ -29,17 +29,14 @@ function connect(event) {
     event.preventDefault();
 }
 
-
 function onConnected() {
     stompClient.subscribe(`/user/${nickname}/queue/messages`, onMessageReceived);
     stompClient.subscribe(`/user/public`, onMessageReceived);
 
-    // register the connected user
     stompClient.send("/app/user.addUser",
         {},
         JSON.stringify({nickName: nickname, fullName: fullname, status: 'ONLINE'})
     );
-//    document.querySelector('#connected-user-fullname').textContent = fullname;
     findAndDisplayConnectedUsers().then();
 }
 
@@ -62,56 +59,54 @@ async function findAndDisplayConnectedUsers() {
 
 function appendUserElement(user, connectedUsersList) {
     const listItem = document.createElement('li');
-        listItem.classList.add('user-item');
-        listItem.id = user.nickName;
+    listItem.classList.add('user-item');
+    listItem.id = user.nickName;
 
-        const anchorTag = document.createElement('a');
-//        anchorTag.href = '#';
-        anchorTag.setAttribute('data-conversation', '#conversation-1');
-        anchorTag.addEventListener('click', userItemClick);
+    const anchorTag = document.createElement('a');
+    anchorTag.setAttribute('data-conversation', '#conversation-1');
+    anchorTag.addEventListener('click', userItemClick);
 
-        const userImage = document.createElement('img');
-        userImage.classList.add('content-message-image');
-        userImage.src = './src/social-media-chatting-online-blank-profile-picture-head-and-body-icon-people-standing-icon-grey-background-free-vector.jpg';
-        userImage.alt = '';
+    const userImage = document.createElement('img');
+    userImage.classList.add('content-message-image');
+    userImage.src = './src/social-media-chatting-online-blank-profile-picture-head-and-body-icon-people-standing-icon-grey-background-free-vector.jpg';
+    userImage.alt = '';
 
-        const messageInfoSpan = document.createElement('span');
-        messageInfoSpan.classList.add('content-message-info');
+    const messageInfoSpan = document.createElement('span');
+    messageInfoSpan.classList.add('content-message-info');
 
-        const nameSpan = document.createElement('span');
-        nameSpan.classList.add('content-message-name');
-        nameSpan.textContent = user.fullName;
+    const nameSpan = document.createElement('span');
+    nameSpan.classList.add('content-message-name');
+    nameSpan.textContent = user.fullName;
 
-        const textSpan = document.createElement('span');
-        textSpan.classList.add('content-message-text');
-        textSpan.textContent = 'Lorem ipsum dolor sit amet consectetur.';
+    const textSpan = document.createElement('span');
+    textSpan.classList.add('content-message-text');
+    textSpan.textContent = 'Lorem ipsum dolor sit amet consectetur.';
 
-        const moreSpan = document.createElement('span');
-        moreSpan.classList.add('content-message-more');
+    const moreSpan = document.createElement('span');
+    moreSpan.classList.add('content-message-more');
 
-        const unreadSpan = document.createElement('span');
-        unreadSpan.classList.add('content-message-unread');
-        unreadSpan.textContent = '1';
+    const unreadSpan = document.createElement('span');
+    unreadSpan.classList.add('content-message-unread');
+    unreadSpan.textContent = '1';
 
-        const timeSpan = document.createElement('span');
-        timeSpan.classList.add('content-message-time');
-        timeSpan.textContent = '12:30';
+    const timeSpan = document.createElement('span');
+    timeSpan.classList.add('content-message-time');
+    timeSpan.textContent = '12:30';
 
-        moreSpan.appendChild(unreadSpan);
-        moreSpan.appendChild(timeSpan);
+    moreSpan.appendChild(unreadSpan);
+    moreSpan.appendChild(timeSpan);
 
-        messageInfoSpan.appendChild(nameSpan);
-        messageInfoSpan.appendChild(textSpan);
+    messageInfoSpan.appendChild(nameSpan);
+    messageInfoSpan.appendChild(textSpan);
 
-        anchorTag.appendChild(userImage);
-        anchorTag.appendChild(messageInfoSpan);
-        anchorTag.appendChild(moreSpan);
+    anchorTag.appendChild(userImage);
+    anchorTag.appendChild(messageInfoSpan);
+    anchorTag.appendChild(moreSpan);
 
-        listItem.appendChild(anchorTag);
+    listItem.appendChild(anchorTag);
+    listItem.addEventListener('click', userItemClick);
 
-        listItem.addEventListener('click', userItemClick);
-
-        connectedUsersList.appendChild(listItem);
+    connectedUsersList.appendChild(listItem);
 }
 
 function userItemClick(event) {
@@ -131,11 +126,9 @@ function userItemClick(event) {
     nbrMsg.textContent = '0';
     var user = clickedUser.querySelector('.content-message-name');
     var userTitle = document.querySelector('.conversation-user-name')
-//    console.log(clickedUser);
-//    console.log(user.textContent);
     userTitle.textContent = user.textContent
-
 }
+
 function displayMessage(senderId, content, fileName, fileType, fileContentBase64) {
     const messageContainer = document.createElement('li');
     messageContainer.classList.add('conversation-item');
@@ -240,35 +233,15 @@ async function fetchAndDisplayUserChat() {
     const userChat = await userChatResponse.json();
     chatArea.innerHTML = '';
     userChat.forEach(chat => {
-
-        displayMessage(chat.senderId, chat.content);
+        displayMessage(chat.senderId, chat.content, chat.fileName, chat.fileType, chat.fileContentBase64);
     });
     chatArea.scrollTop = chatArea.scrollHeight;
 }
 
-
 function onError() {
-    connectingElement.textContent = 'Could not connect to WebSocket server. Please refresh this page to try again!';
-    connectingElement.style.color = 'red';
+//    connectingElement.textContent = 'Could not connect to WebSocket server. Please refresh this page to try again!';
+//    connectingElement.style.color = 'red';
 }
-
-
-//function sendMessage(event) {
-//    const messageContent = messageInput.value.trim();
-//    if (messageContent && stompClient) {
-//        const chatMessage = {
-//            senderId: nickname,
-//            recipientId: selectedUserId,
-//            content: messageInput.value.trim(),
-//            timestamp: new Date()
-//        };
-//        stompClient.send("/app/chat", {}, JSON.stringify(chatMessage));
-//        displayMessage(nickname, messageInput.value.trim());
-//        messageInput.value = '';
-//    }
-//    chatArea.scrollTop = chatArea.scrollHeight;
-//    event.preventDefault();
-//}
 
 function sendMessage(event) {
     const messageContent = messageInput.value.trim();
@@ -309,19 +282,12 @@ function sendMessage(event) {
     event.preventDefault();
 }
 
-
 async function onMessageReceived(payload) {
     await findAndDisplayConnectedUsers();
-    console.log('Message received', payload);
     const message = JSON.parse(payload.body);
 
     if (selectedUserId && selectedUserId === message.senderId) {
-        if (message.fileContentBase64 && message.fileType.startsWith('image/')) {
-            displayMessage(message.senderId, '', message.fileName, message.fileType, message.fileContentBase64);
-        } else {
-            displayMessage(message.senderId, message.content);
-        }
-
+        displayMessage(message.senderId, message.content, message.fileName, message.fileType, message.fileContentBase64);
         chatArea.scrollTop = chatArea.scrollHeight;
     }
 
@@ -338,8 +304,6 @@ async function onMessageReceived(payload) {
         nbrMsg.textContent = '';
     }
 }
-
-/*================================================================================= */
 
 const fileInput = document.createElement('input');
 fileInput.type = 'file';
@@ -376,9 +340,192 @@ function sendFile(base64String, fileName, fileType) {
     }
 }
 
+function onLogout() {
+    stompClient.send("/app/user.disconnectUser",
+        {},
+        JSON.stringify({nickName: nickname, fullName: fullname, status: 'OFFLINE'})
+    );
+    window.location.reload();
+}
 
-usernameForm.addEventListener('submit', connect, true); // step 1
+
+/*============================== CHAT VIDEO CALL ================================*/
+//    var stompClient = null;
+    var signalingClient = null;
+        var videoCallClient = null;
+        var localStream = null;
+        var pc = null;
+        const peerConnectionConfig = {
+            'iceServers': [
+                { 'urls': 'stun:stun.stunprotocol.org:3478' }
+            ]
+        };
+
+        function connectCall() {
+            var socket = new SockJS('/ws');
+            stompClient = Stomp.over(socket);
+
+            stompClient.connect({}, function (frame) {
+                console.log('Connected: ' + frame);
+                stompClient.subscribe('/user/queue/messages', function (message) {
+                    showMessage(JSON.parse(message.body).content);
+                });
+
+                signalingSocket = new SockJS('/signal');
+                signalingClient = Stomp.over(signalingSocket);
+
+                signalingClient.connect({}, function (frame) {
+                    console.log('Signaling connected: ' + frame);
+                    signalingClient.subscribe('/topic/signaling', function (message) {
+                        handleSignalingData(JSON.parse(message.body));
+                    });
+                });
+
+                var videoCallSocket = new SockJS('/video-call');
+                videoCallClient = Stomp.over(videoCallSocket);
+
+                videoCallClient.connect({}, function (frame) {
+                    console.log('Video Call connected: ' + frame);
+                    videoCallClient.subscribe('/user/queue/video-call', function (message) {
+                        handleVideoCallRequest(JSON.parse(message.body));
+                    });
+                });
+            });
+        }
+
+        function handleSignalingData(data) {
+            switch (data.type) {
+                case 'offer':
+                    pc.setRemoteDescription(new RTCSessionDescription(data));
+                    pc.createAnswer().then(answer => {
+                        pc.setLocalDescription(answer);
+                        signalingClient.send('/app/signal', {}, JSON.stringify(answer));
+                    });
+                    break;
+                case 'answer':
+                    pc.setRemoteDescription(new RTCSessionDescription(data));
+                    break;
+                case 'candidate':
+                    pc.addIceCandidate(new RTCIceCandidate(data.candidate));
+                    break;
+                case 'end-call':
+                    stopCall();
+                    break;
+            }
+        }
+
+        function handleVideoCallRequest(data) {
+            if (confirm('You have an incoming video call. Do you want to accept it?')) {
+                startCall(true);
+            }
+        }
+
+        function startCall(isReceiver) {
+            pc = new RTCPeerConnection(peerConnectionConfig);
+
+            pc.onicecandidate = function (event) {
+                if (event.candidate) {
+                    signalingClient.send('/app/signal', {}, JSON.stringify({ 'type': 'candidate', 'candidate': event.candidate }));
+                }
+            };
+
+            pc.ontrack = function (event) {
+                document.getElementById('remoteVideo').srcObject = event.streams[0];
+            };
+
+            navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
+                localStream = stream;
+                document.getElementById('localVideo').srcObject = stream;
+                stream.getTracks().forEach(track => pc.addTrack(track, stream));
+
+                if (!isReceiver) {
+                    pc.createOffer().then(offer => {
+                        pc.setLocalDescription(offer);
+                        signalingClient.send('/app/signal', {}, JSON.stringify(offer));
+                    });
+
+                    videoCallClient.send('/app/video-call', {}, JSON.stringify({ type: 'video-call-request' }));
+                }
+
+                document.getElementById('stopCall').disabled = false;
+                document.getElementById('startCall').disabled = true;
+            }).catch(error => {
+                console.error('Error accessing media devices.', error);
+            });
+        }
+
+        function stopCall() {
+            if (localStream) {
+                localStream.getTracks().forEach(track => track.stop());
+                localStream = null;
+            }
+            if (pc) {
+                pc.close();
+                pc = null;
+            }
+            signalingClient.send('/app/signal', {}, JSON.stringify({ type: 'end-call' }));
+            document.getElementById('localVideo').srcObject = null;
+            document.getElementById('remoteVideo').srcObject = null;
+            document.getElementById('stopCall').disabled = true;
+            document.getElementById('startCall').disabled = false;
+        }
+
+        window.onload = function () {
+            connectCall();
+            document.getElementById('startCall').onclick = function () { startCall(false); };
+            document.getElementById('stopCall').onclick = function () { stopCall(); };
+        };
+
+
+
+let friends = [
+    { id: 1, name: "Alice" },
+    { id: 2, name: "Bob" },
+    { id: 3, name: "Charlie" },
+    // Add more friends here
+];
+
+function showGroupForm() {
+    document.getElementById("groupFormPopup").style.display = "block";
+    displayFriendList(friends);
+}
+
+function closeGroupForm() {
+    document.getElementById("groupFormPopup").style.display = "none";
+}
+
+function displayFriendList(friendArray) {
+    const friendList = document.getElementById("friendList");
+    friendList.innerHTML = "";
+    friendArray.forEach(friend => {
+        const li = document.createElement("li");
+        li.textContent = friend.name;
+        li.setAttribute("data-id", friend.id);
+        li.onclick = () => addToGroup(friend.id);
+        friendList.appendChild(li);
+    });
+}
+
+function filterFriends() {
+    const searchValue = document.getElementById("searchFriend").value.toLowerCase();
+    const filteredFriends = friends.filter(friend => friend.name.toLowerCase().includes(searchValue));
+    displayFriendList(filteredFriends);
+}
+
+function addToGroup(friendId) {
+    const friend = friends.find(f => f.id === friendId);
+    alert(`Added ${friend.name} to the group!`);
+    // Here you can add the logic to actually add the friend to the group, e.g., updating the database or local state
+}
+
+// Close the popup when clicking outside of it
+window.onclick = function(event) {
+    var popup = document.getElementById("groupFormPopup");
+    if (event.target == popup) {
+        popup.style.display = "none";
+    }
+}
+
+usernameForm.addEventListener('submit', connect, true);
 messageForm.addEventListener('submit', sendMessage, true);
-
 logout.addEventListener('click', onLogout, true);
-//window.onbeforeunload = () => onLogout();

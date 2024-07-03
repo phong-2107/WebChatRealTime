@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Application</title>
-    <link rel="shortcut icon" href="./src/Bản sao của tapchat (1).png" type="image/x-icon">
+    <title>Home</title>
+    <link rel="shortcut icon" href="src/Bản sao của tapchat (1).png" type="image/x-icon">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.2.0/fonts/remixicon.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
@@ -33,7 +33,7 @@
         <!-- Sidebar -->
         <aside class="chat-sidebar">
             <a href="#" class="chat-sidebar-logo">
-                <img src="./src/Bản sao của tapchat (1).png" alt="">
+                <img src="src/Bản sao của tapchat (1).png" alt="">
             </a>
             <ul class="chat-sidebar-menu">
                 <li class="active"><a href="#" data-title="Chat"><i class='bx bx-chat'></i></a></li>
@@ -41,7 +41,7 @@
                 <li><a href="#" data-title="Dark/Light" id="darkModeToggle" onclick="toggleDarkMode()"><i class='bx bx-moon'></i></a></li>
                 <li class="chat-sidebar-profile">
                     <button type="button" class="chat-sidebar-profile-toggle">
-                        <img src="./src/social-media-chatting-online-blank-profile-picture-head-and-body-icon-people-standing-icon-grey-background-free-vector.jpg" alt="">
+                        <img src="src/social-media-chatting-online-blank-profile-picture-head-and-body-icon-people-standing-icon-grey-background-free-vector.jpg" alt="">
                     </button>
                     <ul class="chat-sidebar-profile-dropdown">
                         <li><a href="/"><i class="ri-user-line"></i> Profile</a></li>
@@ -67,7 +67,7 @@
                     <button data-title="friend" class="content-sidebar-btn">
                         <i class="ri-user-add-line"></i>
                     </button>
-                    <button data-title="group" class="content-sidebar-btn">
+                    <button data-title="group" class="content-sidebar-btn" onclick="showGroupForm()">
                         <i class="ri-group-line"></i>
                     </button>
                 </div>
@@ -75,6 +75,20 @@
                     <ul class="content-messages-list" id="connectedUsers">
                         <li class="content-message-title"><span>Message</span></li>
                     </ul>
+                </div>
+                <div id="groupFormPopup" class="popup">
+                    <div class="popup-content">
+                        <span class="close-btn" onclick="closeGroupForm()">&times;</span>
+                        <h2>Add User to Group</h2>
+                        <form id="groupForm">
+                            <label for="searchFriend">Search Friend:</label>
+                            <input type="text" id="searchFriend" oninput="filterFriends()" placeholder="Search for friends...">
+                            <ul id="friendList">
+                                <!-- Friends will be dynamically added here -->
+                            </ul>
+                            <button type="submit">Add</button>
+                        </form>
+                    </div>
                 </div>
             </div>
             <!-- Content side -->
@@ -87,7 +101,7 @@
                 <div class="conversation-top">
                     <button type="button" class="conversation-back"><i class="ri-arrow-left-line"></i></button>
                     <div class="conversation-user">
-                        <img class="conversation-user-image" src="./src/social-media-chatting-online-blank-profile-picture-head-and-body-icon-people-standing-icon-grey-background-free-vector.jpg" alt="">
+                        <img class="conversation-user-image" src="src/social-media-chatting-online-blank-profile-picture-head-and-body-icon-people-standing-icon-grey-background-free-vector.jpg" alt="">
                         <div>
                             <div class="conversation-user-name"></div>
                             <div class="conversation-user-status online">online</div>
@@ -96,7 +110,7 @@
                     <div class="conversation-buttons">
                         <button type="button"><i class="ri-search-line"></i></button>
                         <button type="button"><i class="ri-phone-fill"></i></button>
-                        <button type="button"><i class="ri-vidicon-line"></i></button>
+                        <button type="button" id="videoCallButton"><i class="ri-vidicon-line"></i></button>
                         <button type="button"><i class="ri-more-2-fill"></i></button>
                     </div>
                 </div>
@@ -122,6 +136,13 @@
             <!--  Conversation -->
         </div>
         <!--  Content -->
+        <!--  Video Call  style="display:none;"-->
+        <div class="video-container">
+            <video id="localVideo" autoplay muted></video>
+            <video id="remoteVideo" autoplay></video>
+            <button id="startCall">Start Call</button>
+            <button id="stopCall" disabled>Stop Call</button>
+        </div>
     </div>
 </section>
 <!-- Chat -->

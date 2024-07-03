@@ -1,5 +1,7 @@
 package com.example.WebChatRealTime.Controller;
 
+import com.example.WebChatRealTime.Entity.ChatGroup;
+import com.example.WebChatRealTime.Entity.GroupMember;
 import com.example.WebChatRealTime.Entity.User;
 import com.example.WebChatRealTime.Service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +11,9 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -37,6 +42,33 @@ public class UserController {
     @GetMapping("/users")
     public ResponseEntity<List<User>> findConnectedUsers() {
         return ResponseEntity.ok(userService.findConnectedUsers());
+    }
+
+    @MessageMapping("/group.create")
+    @SendTo("/group/public")
+    public ChatGroup createGroup(@Payload ChatGroup chatGroup) {
+        return userService.createGroup(chatGroup);
+    }
+
+    @GetMapping("/groups")
+    public ResponseEntity<List<ChatGroup>> getAllGroups() {
+        return ResponseEntity.ok(userService.getAllGroups());
+    }
+
+    @PostMapping("/group/addUser")
+    public ResponseEntity<GroupMember> addUserToGroup(@RequestBody String groupId, @RequestBody String userId, @RequestBody String role) {
+        return ResponseEntity.ok(userService.addUserToGroup(groupId, userId, role));
+    }
+
+    @PostMapping("/group/removeUser")
+    public ResponseEntity<Void> removeUserFromGroup(@RequestBody String groupId, @RequestBody String userId) {
+        userService.removeUserFromGroup(groupId, userId);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/group/{groupId}/members")
+    public ResponseEntity<List<GroupMember>> getGroupMembers(@PathVariable String groupId) {
+        return ResponseEntity.ok(userService.getGroupMembers(groupId));
     }
 
 
